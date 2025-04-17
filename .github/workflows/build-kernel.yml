@@ -112,9 +112,18 @@ jobs:
                 git clone ${{ env.CUSTOM_CLANG_SOURCE }} -b ${{ env.CUSTOM_CLANG_BRANCH }} clang-aosp --depth=1
             fi
         else
-            wget -O clang.zip ${{ env.CUSTOM_CLANG_SOURCE }}
-            mkdir clang-aosp
-            unzip clang.zip -d clang-aosp/
+           if [[ ${{ env.CUSTOM_CLANG_SOURCE }} == *'.tar.gz' ]]; then
+               wget -O clang.tar.gz ${{ env.CUSTOM_CLANG_SOURCE }}
+               mkdir clang-aosp
+               tar -C clang-aosp/ -zxvf clang.tar.gz
+           elif [[ ${{ env.CUSTOM_CLANG_SOURCE }} == *'.zip' ]]; then
+               wget -O clang.zip ${{ env.CUSTOM_CLANG_SOURCE }}
+               mkdir clang-aosp
+               unzip clang.zip -d clang-aosp/
+           else
+               echo "Unsupported file format"
+               exit 1
+           fi
         fi
 
     - name: Download Gcc-aosp
